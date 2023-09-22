@@ -1,10 +1,34 @@
 name: zinc-k8s
-summary: A very short one-line summary of the charm.
+summary: |
+  Zinc is a search engine that does full text indexing. It is a lightweight alternative to
+  elasticsearch and runs in less than 100 MB of RAM. It uses bluge as the underlying indexing
+  library.
 description: |
-  A single sentence that says what the charm is, concisely and memorably.
+  Zinc is a search engine that does full text indexing. It is a lightweight alternative to
+  elasticsearch and runs in less than 100 MB of RAM. It uses bluge as the underlying indexing
+  library.
 
-  A paragraph of one to three short sentences, that describe what the charm does.
+  It is very simple and easy to operate as opposed to elasticsearch which requires a couple dozen
+  knobs to understand and tune.
 
-  A third paragraph that explains what need the charm meets.
+  It is a drop-in replacement for elasticsearch if you are just ingesting data using APIs and
+  searching using kibana (Kibana is not supported with zinc. Zinc provides its own UI).
 
-  Finally, a paragraph that describes whom the charm is useful for.
+containers:
+  zinc:
+    resource: zinc-image
+    mounts:
+      - storage: data
+        location: /var/lib/zincsearch
+
+resources:
+  zinc-image:
+    type: oci-image
+    description: OCI image for zinc
+    # Included for simplicity in integration tests
+    upstream-source: ghcr.io/jnsgruk/zinc:0.4.9
+
+storage:
+  data:
+    type: filesystem
+    location: /zinc-data
