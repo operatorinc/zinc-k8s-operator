@@ -15,6 +15,8 @@ class ZincCharm(ops.CharmBase):
 
     def _on_zinc_pebble_ready(self, event: ops.PebbleReadyEvent):
         """Define and start a workload using the Pebble API."""
+        if not self._generated_password():
+            event.defer()
         container = self.unit.get_container("zinc")
         container.add_layer("zinc", self._pebble_layer, combine=True)
         container.replan()
