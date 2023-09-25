@@ -3,14 +3,23 @@ import logging
 import secrets
 
 import ops
+from charms.traefik_k8s.v2.ingress import IngressPerAppRequirer
+
+
+ZINC_PORT = 4080
 
 
 class ZincCharm(ops.CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
         self.framework.observe(self.on.zinc_pebble_ready, self._on_zinc_pebble_ready)
-        self.framework.observe(
-            self.on.get_admin_password_action, self._on_get_admin_password
+        self.framework.observe(self.on.get_admin_password_action, self._on_get_admin_password)
+
+        self._ingress = IngressPerAppRequirer(
+            self,
+            host=f"{self.app.name}.{self.model.name}.svc.cluster.local",
+            port=ZINC_PORT,
+            strip_prefix=True,
         )
 
     def _on_zinc_pebble_ready(self, event: ops.PebbleReadyEvent):
@@ -21,7 +30,7 @@ class ZincCharm(ops.CharmBase):
         container.add_layer("zinc", self._pebble_layer, combine=True)
         container.replan()
 
-        self.unit.open_port(protocol="tcp", port=4080)
+        self.unit.open_port(protocol="tcp", port=ZINC_PORT)
 
         self.unit.status = ops.ActiveStatus()
 

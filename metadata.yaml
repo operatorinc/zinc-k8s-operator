@@ -21,6 +21,11 @@ peers:
   zinc-peers:
     interface: zinc_peers
 
+requires:
+  ingress:
+    interface: ingress
+    limit: 1
+
 containers:
   zinc:
     resource: zinc-image
